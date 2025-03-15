@@ -1,0 +1,9 @@
+.fire-marker {
+  left: -26px;
+  position: absolute;
+  top: -1px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}

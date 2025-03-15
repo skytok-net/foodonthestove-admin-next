@@ -1,0 +1,112 @@
+
+fragment Notification on Notifications {
+  id
+  title
+  subtitle
+  createdAt
+  data
+  isRead
+  iconUrl
+  messageMarkdown
+  notificationTypeId
+  notificationType {
+    id
+    iconUrl
+    name
+    schema
+    createdAt
+  }
+}
+
+query Notifications {
+  notificationsCollection {
+    edges {
+      node {
+        ...Notification
+      }
+    }
+  }
+}
+
+query Notification($id: UUID!) {
+  notificationsCollection(filter: {id: {eq: $id}}) {
+    edges {
+      node {
+        ...Notification
+      }
+    }
+  }
+}
+
+mutation CreateNotification($input: NotificationsInsertInput!) {
+  insertIntoNotificationsCollection(objects: [$input]) {
+    records {
+      ...Notification
+    }
+  }
+}
+
+mutation UpdateNotification($id: UUID!, $input: NotificationsUpdateInput!) {
+  updateNotificationsCollection(set: $input, filter: {id: {eq: $id}}) {
+    records {
+      ...Notification
+    }
+  }
+}
+
+mutation DeleteNotification($id: UUID!) {
+  deleteFromNotificationsCollection(filter: {id: {eq: $id}}) {
+    affectedCount
+  }
+}
+
+fragment NotificationType on NotificationTypes {
+  id
+  name
+  key
+  iconUrl
+  createdAt
+}
+
+query NotificationTypes {
+  notificationTypesCollection {
+    edges {
+      node {
+        ...NotificationType
+      }
+    }
+  }
+}
+
+query NotificationType($id: UUID!) {
+  notificationTypesCollection(filter: {id: {eq: $id}}) {
+    edges {
+      node {
+        ...NotificationType
+      }
+    }
+  }
+}
+
+mutation CreateNotificationType($input: NotificationTypesInsertInput!) {
+  insertIntoNotificationTypesCollection(objects: [$input]) {
+    records {
+      ...NotificationType
+    }
+  }
+}
+
+mutation UpdateNotificationType($id: UUID!, $input: NotificationTypesUpdateInput!) {
+  updateNotificationTypesCollection(set: $input, filter: {id: {eq: $id}}) {
+    records {
+      ...NotificationType
+    }
+  }
+}
+
+mutation DeleteNotificationType($id: UUID!) {
+  deleteFromNotificationTypesCollection(filter: {id: {eq: $id}}) {
+    affectedCount
+  }
+}
+

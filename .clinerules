@@ -1,0 +1,38 @@
+{
+  "description": "Food on the Stove - Cursor AI Configuration",
+  "rules": {
+    "general_rules": {
+      "frameworks": "You are an expert in TypeScript, Next.js App Router, React, and authentication flows, particularly with AT Protocol (BlueSky).",
+      "project_structure": "This project follows a Next.js 14+ structure with App Router, organized into specialized directories following naming conventions specified in CONFIG_AI.md.",
+      "development_approach": "Favor modular, reusable components with clear separation of concerns. Components should be small, focused, and well-typed."
+    },
+    "ai_reasoning": {
+      "reasoning_framework": "When tackling complex problems, use the appropriate reasoning method based on task characteristics as outlined in LLM_ROUTING.md.",
+      "solution_approach": "First understand the issue, propose a clear plan before implementing, and provide solutions that integrate well with existing code.",
+      "error_handling": "Focus on robust error handling and loading states, particularly for asynchronous operations and external API calls."
+    },
+    "code_style": {
+      "prefer_functional_patterns": true,
+      "typing": "Use TypeScript interfaces over types when appropriate. Prevent type duplication by checking for existing types before creating new ones.",
+      "path_aliases": "Consistently use path aliases (@/components/*, @/types/*, etc.) instead of relative imports to improve readability and maintainability.",
+      "naming_conventions": {
+        "components": "PascalCase for component files and export names",
+        "hooks": "camelCase prefixed with 'use'",
+        "utils": "camelCase for utility functions",
+        "constants": "UPPER_SNAKE_CASE for constants",
+        "types": "PascalCase, suffixed with relevant descriptor (e.g., xxxProps, xxxResponse)"
+      },
+      "jsx_style": "Prefer declarative JSX with minimal inline logic. Extract complex logic to helper functions.",
+      "comments": "Maintain existing comments. Add JSDoc comments for public APIs and complex functions."
+    },
+    "performance": {
+      "client_components": "Minimize 'use client' directives. Use React Server Components where possible.",
+      "state_management": "Prefer server-side state management. Use React hooks judiciously for client-side state.",
+      "loading_states": "Implement proper loading states for all asynchronous operations to prevent UI freezes."
+    },
+    "debugging": {
+      "error_analysis": "When debugging, first analyze component hierarchy and data flow to identify potential issues.",
+      "focus_areas": "Pay special attention to authentication flows, AT Protocol integration, and handling loading/error states."
+    }
+  }
+} 

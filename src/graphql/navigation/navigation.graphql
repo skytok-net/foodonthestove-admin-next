@@ -1,0 +1,105 @@
+fragment Navigation on Navigation {
+  id
+  name
+  key
+  data
+  createdAt
+  navigationItemsCollection(orderBy: [ {
+    index: AscNullsLast
+  }]) {
+    edges {
+      node {
+        ...NavigationItem
+      }
+    }
+  }
+}
+
+fragment NavigationItem on NavigationItems {
+  id
+  navigationId
+  parentId
+  name
+  path
+  iconName
+  tag
+  data
+  roles
+  createdAt
+  index
+}
+
+
+query Navigation {
+  navigationCollection {
+    edges {
+      node {
+        ...Navigation
+      }
+    }
+  }
+}
+
+query AdminNavigation {
+  navigationCollection(filter: {key: {eq: "admin"}}) {
+    edges {
+      node {
+        ...Navigation
+      }
+    }
+  }
+}
+
+query TopNavigation {
+  navigationCollection(filter: {key: {eq: "top"}}) {
+    edges {
+      node {
+        ...Navigation
+      }
+    }
+  }
+}
+
+mutation CreateNavigation($input: NavigationInsertInput!) {
+  insertIntoNavigationCollection(objects: [$input]) {
+    records {
+      ...Navigation
+    }
+  }
+}
+
+mutation UpdateNavigation($id: UUID!, $input: NavigationUpdateInput!) {
+  updateNavigationCollection(set: $input, filter: {id: {eq: $id}}) {
+    records {
+      ...Navigation
+    }
+  }
+}
+
+mutation DeleteNavigation($id: UUID!) {
+  deleteFromNavigationCollection(filter: {id: {eq: $id}}) {
+    affectedCount
+  }
+}
+
+mutation CreateNavigationItem($input: NavigationItemsInsertInput!) {
+  insertIntoNavigationItemsCollection(objects: [$input]) {
+    records {
+      ...NavigationItem
+    }
+  }
+}
+
+mutation UpdateNavigationItem($id: UUID!, $input: NavigationItemsUpdateInput!) {
+  updateNavigationItemsCollection(set: $input, filter: {id: {eq: $id}}) {
+    records {
+      ...NavigationItem
+    }
+  }
+}
+
+mutation DeleteNavigationItem($id: UUID!) {
+  deleteFromNavigationItemsCollection(filter: {id: {eq: $id}}) {
+    affectedCount
+  }
+}

@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "forceConsistentCasingInFileNames": true,
+    "target": "ES2022",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -19,7 +20,16 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@/auth": ["./src/auth.ts"],
+      "@/components": ["./src/components"],
+      "@/hooks": ["./src/hooks"],
+      "@/lib": ["./src/lib"],
+      "@/utils": ["./src/utils"],
+      "@/types": ["./src/types"],
+      "@/graphql": ["./src/graphql"],
+      "@/services": ["./src/services"],
+      "@/stores": ["./src/stores"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
