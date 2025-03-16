@@ -49,11 +49,11 @@ interface NavigationItem {
 }
 
 export const NavigationSidebar = () => {
-  const { adminNavigation, currentNavigationItem, loading, error } = useNavigation();
+  const { adminNavigation, currentNavigationItem, loading, error, isReady } = useNavigation();
   const pathname = usePathname();
   const [expandedItems, setExpandedItems] = React.useState<Record<string, boolean>>({});
 
-  if (loading) return <div>Loading...</div>;
+  if (loading || !isReady) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   // Toggle expanded state for items with children

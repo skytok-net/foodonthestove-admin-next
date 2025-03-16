@@ -19,7 +19,8 @@ function makeClient() {
     // (this does not work if you are rendering your page with `export const dynamic = "force-static"`)
     fetchOptions: { cache: "no-store" },
     headers: {
-      Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY}`,
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
+      apiKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
     },
   });
 

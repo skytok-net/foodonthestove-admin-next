@@ -1,7 +1,6 @@
 'use client';
 
 import { useTheme } from 'next-themes';
-import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,17 +9,14 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Sun, Moon, LaptopIcon } from 'lucide-react';
+import { useMounted } from '@/hooks/use-mounted';
 
 export function ThemeToggle() {
   const { setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  // When mounted on client, now we can show the UI
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   if (!mounted) {
+    // Return a placeholder with the same dimensions to prevent layout shift
     return (
       <Button variant="ghost" size="sm" className="w-9 h-9 px-0">
         <span className="sr-only">Toggle theme</span>
@@ -54,4 +50,4 @@ export function ThemeToggle() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-} 
+}

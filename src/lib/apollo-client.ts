@@ -12,8 +12,8 @@ function makeClient() {
     // this needs to be an absolute url, as relative urls cannot be used in SSR
     uri,
     headers: {
-      Authorization: `Bearer ${supabaseAnonKey}`,
-      apiKey: supabaseAnonKey,
+      Authorization: `Bearer ${supabaseAnonKey || ''}`,
+      apiKey: supabaseAnonKey || '',
     },
   });
 

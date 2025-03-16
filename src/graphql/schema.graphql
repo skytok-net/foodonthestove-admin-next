@@ -2773,14 +2773,12 @@ type ShoppingCartItems implements Node {
   # Globally Unique Record Identifier
   nodeId: ID!
   id: UUID!
-  userId: UUID!
   productId: UUID!
-  quantity: BigInt!
+  quantity: Int!
   createdAt: Datetime!
   unitPrice: Float!
   shoppingCartId: UUID!
   product: Products!
-  user: Users!
   shoppingCart: ShoppingCarts!
 }
 
@@ -2803,9 +2801,8 @@ type ShoppingCartItemsEdge {
 
 input ShoppingCartItemsFilter {
   id: UUIDFilter
-  userId: UUIDFilter
   productId: UUIDFilter
-  quantity: BigIntFilter
+  quantity: IntFilter
   createdAt: DatetimeFilter
   unitPrice: FloatFilter
   shoppingCartId: UUIDFilter
@@ -2820,9 +2817,8 @@ input ShoppingCartItemsFilter {
 
 input ShoppingCartItemsInsertInput {
   id: UUID
-  userId: UUID
   productId: UUID
-  quantity: BigInt
+  quantity: Int
   createdAt: Datetime
   unitPrice: Float
   shoppingCartId: UUID
@@ -2837,7 +2833,6 @@ type ShoppingCartItemsInsertResponse {
 
 input ShoppingCartItemsOrderBy {
   id: OrderByDirection
-  userId: OrderByDirection
   productId: OrderByDirection
   quantity: OrderByDirection
   createdAt: OrderByDirection
@@ -2847,9 +2842,8 @@ input ShoppingCartItemsOrderBy {
 
 input ShoppingCartItemsUpdateInput {
   id: UUID
-  userId: UUID
   productId: UUID
-  quantity: BigInt
+  quantity: Int
   createdAt: Datetime
   unitPrice: Float
   shoppingCartId: UUID
@@ -2963,7 +2957,7 @@ type StationDeliveryLocations implements Node {
   stationId: UUID!
   deliveryLocationId: UUID!
   station: Stations!
-  deliveryLocation: DeliveryLocation
+  deliveryLocation: DeliveryLocation!
   stationDeliveryLocationTimeslotsCollection(
     # Query the first `n` records in the collection
     first: Int
@@ -3538,23 +3532,8 @@ type Users implements Node {
   createdAt: Datetime!
   updatedAt: Datetime
   primaryStationId: UUID
+  stripeCustomerId: String
   primaryStation: Stations
-  shoppingCartItemsCollection(
-    # Query the first `n` records in the collection
-    first: Int
-    # Query the last `n` records in the collection
-    last: Int
-    # Query values in the collection before the provided cursor
-    before: Cursor
-    # Query values in the collection after the provided cursor
-    after: Cursor
-    # Skip n values from the after cursor. Alternative to cursor pagination. Backward pagination not supported.
-    offset: Int
-    # Filters to apply to the results set when querying from the collection
-    filter: ShoppingCartItemsFilter
-    # Sort order to apply to the collection
-    orderBy: [ShoppingCartItemsOrderBy!]
-  ): ShoppingCartItemsConnection
   userRolesCollection(
     # Query the first `n` records in the collection
     first: Int
@@ -3681,6 +3660,7 @@ input UsersFilter {
   createdAt: DatetimeFilter
   updatedAt: DatetimeFilter
   primaryStationId: UUIDFilter
+  stripeCustomerId: StringFilter
   nodeId: IDFilter
   # Returns true only if all its inner filters are true, otherwise returns false
   and: [UsersFilter!]
@@ -3702,6 +3682,7 @@ input UsersInsertInput {
   createdAt: Datetime
   updatedAt: Datetime
   primaryStationId: UUID
+  stripeCustomerId: String
 }
 
 type UsersInsertResponse {
@@ -3722,6 +3703,7 @@ input UsersOrderBy {
   createdAt: OrderByDirection
   updatedAt: OrderByDirection
   primaryStationId: OrderByDirection
+  stripeCustomerId: OrderByDirection
 }
 
 type UserStations implements Node {
@@ -3813,6 +3795,7 @@ input UsersUpdateInput {
   createdAt: Datetime
   updatedAt: Datetime
   primaryStationId: UUID
+  stripeCustomerId: String
 }
 
 type UsersUpdateResponse {

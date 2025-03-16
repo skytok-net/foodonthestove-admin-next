@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { FeedContent } from '@/components/feed/feed-content';
 import { Button } from '@/components/ui/button';
+import { FeedContent } from '@/components/feed/feed-content';
 import { Loader2, ArrowRight } from 'lucide-react';
-import ClientMainLayout from '@/components/layouts/client-main-layout';
+import AppLayout from '@/components/layouts/app-layout';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -84,7 +84,7 @@ export default function HomePage() {
   }, [user?.did, status]);
   
   return (
-    <ClientMainLayout>
+    <AppLayout>
       <div className="space-y-12">
         {/* Hero Section with Call-to-Action */}
         <section className="relative py-12 px-6 md:py-20 md:px-10 rounded-xl overflow-hidden bg-gradient-to-br from-primary/10 to-secondary/10 shadow-md">
@@ -220,6 +220,6 @@ export default function HomePage() {
           </div>
         </footer>
       </div>
-    </ClientMainLayout>
+    </AppLayout>
   );
 }

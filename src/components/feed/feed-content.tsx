@@ -45,10 +45,18 @@ export function FeedContent() {
     let retryTimer: NodeJS.Timeout | null = null;
     
     if (error && retryCount < 3 && isMounted) {
+      // Check if it's a rate limit error
+      const isRateLimit = error.toString().includes('429') || 
+                          error.toString().includes('rate limit') || 
+                          error.toString().toLowerCase().includes('too many requests');
+      
+      // Use a longer delay for rate limit errors
+      const retryDelay = isRateLimit ? 10000 : 2000; // 10 seconds for rate limits, 2 seconds for other errors
+      
       retryTimer = setTimeout(() => {
         setRetryCount(prev => prev + 1);
         setFetchAttempted(false); // Reset to trigger a new fetch
-      }, 2000); // Retry after 2 seconds
+      }, retryDelay);
     }
     
     return () => {
@@ -61,20 +69,76 @@ export function FeedContent() {
     return <FeedLoadingSkeleton />;
   }
 
-  if (error) {
+    if (error) {
+    // Check if it's a rate limit error
+    const isRateLimit = error.toString().includes('429') || 
+                        error.toString().includes('rate limit') || 
+                        error.toString().toLowerCase().includes('too many requests');
+    
     return (
-      <div className="p-4 text-red-500">
-        <p>Error loading feed: {error}</p>
-        <Button 
-          onClick={() => {
-            setFetchAttempted(false);
-            setRetryCount(0);
-          }} 
-          variant="outline" 
-          className="mt-2"
-        >
-          Retry
-        </Button>
+      <div className="p-4 rounded-lg bg-card shadow-sm">
+        <div className="flex flex-col items-center justify-center text-center p-4">
+          {isRateLimit ? (
+            <>
+              <p className="text-amber-500 font-medium mb-2">API Rate Limit Reached</p>
+              <p className="text-muted-foreground mb-4">
+                We&apos;ve reached the BlueSky API rate limit. The system will automatically retry after a cooldown period.
+              </p>
+              <div className="bg-amber-50 dark:bg-amber-950/30 p-4 rounded-lg border border-amber-200 dark:border-amber-800 mb-4 w-full max-w-2xl">
+                <h3 className="font-medium mb-2 text-amber-700 dark:text-amber-300">Rate Limiting Information</h3>
+                <p className="text-sm text-muted-foreground mb-2">
+                  To prevent excessive API requests, we&apos;ve implemented rate limiting with the following features:
+                </p>
+                <ul className="text-sm text-left list-disc pl-5 text-muted-foreground">
+                  <li>Automatic throttling of requests (5 second minimum between requests)</li>
+                  <li>Exponential backoff for retries (increasing delay between attempts)</li>
+                  <li>15-minute cooldown period after hitting rate limits</li>
+                  <li>Persistent session management to reduce authentication requests</li>
+                </ul>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl">
+                <div className="bg-card p-4 rounded-lg border">
+                  <h3 className="font-medium mb-2">Sample Post 1</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Healthy meal prep ideas for firefighters on shift: grilled chicken with roasted vegetables, 
+                    quinoa bowls, and overnight oats for quick energy.
+                  </p>
+                </div>
+                <div className="bg-card p-4 rounded-lg border">
+                  <h3 className="font-medium mb-2">Sample Post 2</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Join our nutrition workshop next week! Learn how proper nutrition can improve 
+                    energy levels and recovery time for first responders.
+                  </p>
+                </div>
+              </div>
+              <Button 
+                onClick={() => {
+                  setFetchAttempted(false);
+                  setRetryCount(0);
+                }} 
+                variant="outline" 
+                className="mt-4"
+              >
+                Try Again
+              </Button>
+            </>
+          ) : (
+            <>
+              <p className="text-red-500 mb-2">Error loading feed: {error.toString()}</p>
+              <Button 
+                onClick={() => {
+                  setFetchAttempted(false);
+                  setRetryCount(0);
+                }} 
+                variant="outline" 
+                className="mt-2"
+              >
+                Retry
+              </Button>
+            </>
+          )}
+        </div>
       </div>
     );
   }
@@ -97,23 +161,40 @@ export function FeedContent() {
     );
   }
 
+  // Safely render feed items with error handling
   return (
     <div className="space-y-4 p-4">
-      {feed.map((post: FeedPost) => (
-        <FeedItem 
-          key={post.cid} 
-          post={post} 
-          onLike={handleLike}
-          onRepost={handleRepost}
-          isLoggedIn={isLoggedIn}
-        />
-      ))}
+      {Array.isArray(feed) ? (
+        feed.map((post: FeedPost) => (
+          <FeedItem 
+            key={post.cid} 
+            post={post} 
+            onLike={handleLike}
+            onRepost={handleRepost}
+            isLoggedIn={isLoggedIn}
+          />
+        ))
+      ) : (
+        <div className="p-4 text-center text-gray-500">
+          <p>Error loading feed data.</p>
+          <Button 
+            onClick={() => {
+              setFetchAttempted(false);
+              setRetryCount(0);
+            }} 
+            variant="outline" 
+            className="mt-2"
+          >
+            Retry
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
 
 // Separate loading skeleton component for reuse
-function FeedLoadingSkeleton() {
+export function FeedLoadingSkeleton() {
   return (
     <div className="space-y-4 p-4">
       {[...Array(3)].map((_, i) => (
@@ -142,7 +223,7 @@ interface FeedItemProps {
   isLoggedIn: boolean;
 }
 
-function FeedItem({ post, onLike, onRepost, isLoggedIn }: FeedItemProps) {
+export function FeedItem({ post, onLike, onRepost, isLoggedIn }: FeedItemProps) {
   const formattedDate = post.indexedAt 
     ? formatDistanceToNow(new Date(post.indexedAt), { addSuffix: true }) 
     : '';
@@ -165,12 +246,13 @@ function FeedItem({ post, onLike, onRepost, isLoggedIn }: FeedItemProps) {
     isActive: boolean,
     activeClass: string
   ) => {
+    // Note: isActive and activeClass are used in the className string interpolation below
     if (isLoggedIn) {
       return (
         <Button
           variant="ghost"
           size="sm"
-          className="flex items-center space-x-1"
+          className={`flex items-center space-x-1 ${isActive ? activeClass : ''}`}
           onClick={onClick}
         >
           {icon}

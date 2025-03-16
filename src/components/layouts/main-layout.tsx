@@ -22,7 +22,6 @@ import { Button } from '@/components/ui/button';
 import { useNavigation } from '@/hooks/use-navigation';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useAuth } from '@/hooks/use-auth';
-import { Loader2, Menu } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
@@ -32,7 +31,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
   
   // Use auth and navigation hooks
   const { logout, user, isAdmin, profile } = useAuth();
-  const { topNavItems, isAdminSection, isReady: isNavigationReady } = useNavigation();
+  const { topNavigation, isAdminSection, isReady: isNavigationReady } = useNavigation();
+  
+  // Ensure topNavItems is always an array
+  const topNavItems = topNavigation || [];
   
   // Single useEffect to handle client-side mounting
   useEffect(() => {

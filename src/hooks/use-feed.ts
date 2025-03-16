@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useFeedStore } from '@/stores/feed-store';
 import { AppBskyFeedDefs } from '@atproto/api';
+import { initializeFeedAgent } from '@/lib/feed-agent';
 
 // Type for the feed view post from AT Protocol
 type FeedViewPost = AppBskyFeedDefs.FeedViewPost;
@@ -26,21 +27,61 @@ export const useFeed = (autoStart = false, intervalMs = 30000) => {
     handleLike,
     handleRepost,
     handleReply,
-    initializeFeedAgent,
   } = useFeedStore();
+  
+  // Use a ref to track initialization status
+  const isInitializedRef = useRef(false);
+
+  // Initialize the feed agent once
+  const ensureInitialized = useCallback(async () => {
+    if (!isInitializedRef.current) {
+      try {
+        // This uses the singleton pattern from feed-agent.ts
+        const agent = await initializeFeedAgent();
+        if (agent) {
+          isInitializedRef.current = true;
+          return true;
+        }
+        return false;
+      } catch (err) {
+        console.error('Error initializing feed agent:', err);
+        return false;
+      }
+    }
+    return true;
+  }, []);
 
   // Wrap fetchFeed to ensure agent is initialized first
   const fetchFeed = useCallback(async () => {
     try {
-      // Make sure we have an agent before fetching
-      await initializeFeedAgent();
+      // Make sure the agent is initialized
+      const initialized = await ensureInitialized();
+      if (!initialized) {
+        console.warn('Failed to initialize feed agent, returning empty feed');
+        // Return a successful response with empty feed instead of throwing
+        return { success: true, feed: [] };
+      }
+      
+      // Fetch the feed
       return await storeFetchFeed();
     } catch (err) {
-      console.error('Error in fetchFeed:', err);
-      // Don't rethrow to prevent unhandled promise rejections
-      return { success: false, error: err };
+      // Check if it's a rate limit error
+      const isRateLimit = err instanceof Error && 
+        (err.message.includes('429') || 
+         err.message.toLowerCase().includes('rate limit') || 
+         err.message.toLowerCase().includes('too many requests'));
+         
+      if (isRateLimit) {
+        console.warn('Rate limit detected in fetchFeed, will retry after cooldown');
+        // Propagate rate limit errors so they can be handled by the UI
+        throw err;
+      } else {
+        console.error('Error in fetchFeed:', err);
+        // Return a successful response with empty feed for non-rate-limit errors
+        return { success: true, feed: [] };
+      }
     }
-  }, [initializeFeedAgent, storeFetchFeed]);
+  }, [ensureInitialized, storeFetchFeed]);
 
   useEffect(() => {
     let isMounted = true;
@@ -52,14 +93,26 @@ export const useFeed = (autoStart = false, intervalMs = 30000) => {
           if (!isMounted) return;
           
           // Initialize the agent first
-          await initializeFeedAgent();
+          const initialized = await ensureInitialized();
           
-          // Then start the subscription if still mounted
-          if (isMounted) {
-            startSubscription(intervalMs);
+          // Then start the subscription if still mounted and initialized
+          if (isMounted && initialized) {
+            // Use a longer interval to reduce API calls
+            const safeIntervalMs = Math.max(intervalMs, 60000); // Minimum 60 seconds
+            startSubscription(safeIntervalMs);
           }
         } catch (err) {
-          console.error('Failed to initialize feed agent:', err);
+          // Check if it's a rate limit error
+          const isRateLimit = err instanceof Error && 
+            (err.message.includes('429') || 
+             err.message.toLowerCase().includes('rate limit') || 
+             err.message.toLowerCase().includes('too many requests'));
+             
+          if (isRateLimit) {
+            console.warn('Rate limit detected during initialization, will retry after cooldown');
+          } else {
+            console.error('Failed to initialize feed agent:', err);
+          }
         }
       };
       
@@ -72,7 +125,7 @@ export const useFeed = (autoStart = false, intervalMs = 30000) => {
         stopSubscription();
       }
     };
-  }, [autoStart, startSubscription, stopSubscription, intervalMs, initializeFeedAgent]);
+  }, [autoStart, startSubscription, stopSubscription, intervalMs, ensureInitialized]);
 
   return {
     feed,
@@ -86,7 +139,7 @@ export const useFeed = (autoStart = false, intervalMs = 30000) => {
     handleLike,
     handleRepost,
     handleReply,
-    initializeFeedAgent,
+    isInitialized: isInitializedRef.current,
   };
 }
 

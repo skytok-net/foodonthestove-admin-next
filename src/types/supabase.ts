@@ -613,7 +613,6 @@ export type Database = {
           quantity: number
           shopping_cart_id: string
           unit_price: number
-          user_id: string
         }
         Insert: {
           created_at?: string
@@ -622,7 +621,6 @@ export type Database = {
           quantity: number
           shopping_cart_id: string
           unit_price: number
-          user_id: string
         }
         Update: {
           created_at?: string
@@ -631,7 +629,6 @@ export type Database = {
           quantity?: number
           shopping_cart_id?: string
           unit_price?: number
-          user_id?: string
         }
         Relationships: [
           {
@@ -639,13 +636,6 @@ export type Database = {
             columns: ["product_id"]
             isOneToOne: false
             referencedRelation: "products"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "shopping_cart_item_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
@@ -983,6 +973,7 @@ export type Database = {
           metadata: Json | null
           pds_url: string
           primary_station_id: string | null
+          stripe_customer_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -996,6 +987,7 @@ export type Database = {
           metadata?: Json | null
           pds_url: string
           primary_station_id?: string | null
+          stripe_customer_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -1009,6 +1001,7 @@ export type Database = {
           metadata?: Json | null
           pds_url?: string
           primary_station_id?: string | null
+          stripe_customer_id?: string | null
           updated_at?: string | null
         }
         Relationships: [

@@ -12,7 +12,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <SessionProvider>
+      <SessionProvider
+        refetchInterval={0} // Disable automatic refetching
+        refetchOnWindowFocus={false} // Disable refetch on window focus
+        refetchWhenOffline={false} // Disable refetch when offline
+      >
         <ApolloWrapper>
           {children}
         </ApolloWrapper>

@@ -6,6 +6,7 @@ export interface NavigationStore {
     adminNavigation: NavigationItemFragment[];
     loading: boolean;
     error: string | null;
+    isReady: boolean;
     currentNavigationItem: NavigationItemFragment | null;
     setCurrentNavigationItem: (navigationItem: NavigationItemFragment | null) => void;
     fetchNavigation: () => Promise<void>;
